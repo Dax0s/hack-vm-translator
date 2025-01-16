@@ -59,3 +59,27 @@ char* Clean(const char *s)
 
     return pNew;
 }
+
+int ParseInt(const char *s, int* parsedInt)
+{
+    if (s == NULL) return 0;
+    int parsed = 0;
+
+    int i = 0;
+    while (s[i] != '\0')
+    {
+        if (s[i] >= 48 && s[i] <= 57)
+        {
+            parsed = parsed * 10 + (s[i] - 48);
+        }
+        else
+        {
+            return 0;
+        }
+
+        i++;
+    }
+
+    *parsedInt = parsed;
+    return 1;
+}
