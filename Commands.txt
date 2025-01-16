@@ -118,7 +118,32 @@ M=!M
 
 @SP\nA=M-1\nM=!M\n
 
-pop segment i
-push segment i
+---- pop segment i  w
+@segment
+D=M
+@i
+D=D+A
+@tmp
+M=D
+@SP
+AM=M-1
+D=M
+@tmp
+A=M
+M=D
+
+---- push segment i w
+@segment
+D=M
+@i
+D=D+A
+A=D
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+
 push pointer 0/1 -> *SP = THIS/THAT, SP++
 [local, argument, this, that] -> [LCL, ARG, THIS, THAT]
