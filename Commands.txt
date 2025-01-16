@@ -1,0 +1,124 @@
+---- add w
+@SP
+AM=M-1
+D=M
+@SP
+A=M-1
+M=D+M
+
+@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nM=D+M\n
+
+---- sub w
+@SP
+AM=M-1
+D=M
+@SP
+A=M-1
+M=M-D
+
+@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nM=M-D\n
+
+---- neg w
+@SP
+A=M-1
+M=-M
+
+@SP\nA=M-1\nM=-M\n
+
+---- eq w
+@SP
+AM=M-1
+D=M
+@SP
+A=M-1
+D=D-M
+@EQ1
+D;JEQ
+@SP
+A=M-1
+M=0
+@END1
+0;JMP
+(EQ1)
+@SP
+A=M-1
+M=1
+(END1)
+
+@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nD=D-M\n@EQ1\nD;JEQ\n@SP\nA=M-1\nM=0\n@END1\n0;JMP\n(EQ1)\n@SP\nA=M-1\nM=1\n(END1)\n
+
+---- gt w
+@SP
+AM=M-1
+D=M
+@SP
+A=M-1
+D=M-D
+@GT1
+D;JGT
+@SP
+A=M-1
+M=0
+@END1
+0;JMP
+(GT1)
+@SP
+A=M-1
+M=1
+(END1)
+
+@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nD=M-D\n@GT1\nD;JGT\n@SP\nA=M-1\nM=0\n@END1\n0;JMP\n(GT1)\n@SP\nA=M-1\nM=1\n(END1)\n
+
+---- lt w
+@SP
+AM=M-1
+D=M
+@SP
+A=M-1
+D=M-D
+@GT1
+D;JLT
+@SP
+A=M-1
+M=0
+@END1
+0;JMP
+(GT1)
+@SP
+A=M-1
+M=1
+(END1)
+
+@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nD=M-D\n@GT1\nD;JLT\n@SP\nA=M-1\nM=0\n@END1\n0;JMP\n(GT1)\n@SP\nA=M-1\nM=1\n(END1)\n
+
+---- and w
+@SP
+AM=M-1
+D=M
+@SP
+A=M-1
+M=D&M
+
+@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nM=D&M\n
+
+---- or w
+@SP
+AM=M-1
+D=M
+@SP
+A=M-1
+M=D|M
+
+@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nM=D|M\n
+
+---- not w
+@SP
+A=M-1
+M=!M
+
+@SP\nA=M-1\nM=!M\n
+
+pop segment i
+push segment i
+push pointer 0/1 -> *SP = THIS/THAT, SP++
+[local, argument, this, that] -> [LCL, ARG, THIS, THAT]
