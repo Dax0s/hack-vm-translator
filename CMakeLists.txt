@@ -5,4 +5,6 @@ set(CMAKE_C_STANDARD 11)
 
 add_executable(VMTranslator src/main.c
         src/Parser.c
-        src/Parser.h)
+        src/Parser.h
+        src/Utils.c
+        src/Utils.h)
