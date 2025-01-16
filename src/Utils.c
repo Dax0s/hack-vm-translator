@@ -5,6 +5,8 @@
 
 int StrCmp(const char *s1, const char *s2)
 {
+    if (s1 == NULL || s2 == NULL) return 0;
+
     int i = 0;
     while (s1[i] != '\0')
     {
@@ -18,6 +20,7 @@ int StrCmp(const char *s1, const char *s2)
 
 int StrLen(const char *s)
 {
+    if (s == NULL) return 0;
     int i;
     for (i = 0; s[i] != '\0'; i++) {}
     return i;
@@ -40,6 +43,12 @@ char* Clean(const char *s)
         }
     }
     p[j] = '\0';
+
+    if (j == 0)
+    {
+        free(p);
+        return NULL;
+    }
 
     char* pNew = realloc(p, (j + 1) * sizeof(char));
     if (pNew == NULL)
