@@ -145,5 +145,19 @@ M=D
 @SP
 M=M+1
 
-push pointer 0/1 -> *SP = THIS/THAT, SP++
+---- push pointer 0/1 -> *SP = THIS/THAT, SP++
+@THIS
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+---- pop pointer 0/1 -> SP--, THIS/THAT = *SP
+@SP
+AM=M-1
+D=M
+@THIS
+M=D
+
 [local, argument, this, that] -> [LCL, ARG, THIS, THAT]
