@@ -61,7 +61,15 @@ char* ParseSegment(const char* command)
 
 char* ParseValue(const char* command)
 {
-    return ParseNWord(command, 3);
+    char* p = ParseNWord(command, 3);
+    if (p == NULL) return NULL;
+
+    for (int i = 0; p[i] != '\0'; i++)
+    {
+        if (p[i] < '0' || p[i] > '9') return NULL;
+    }
+
+    return p;
 }
 
 char* ParseArithmeticCommand(const char* command)
@@ -118,7 +126,138 @@ char* ParseArithmeticCommand(const char* command)
     return NULL;
 }
 
-char* ParseCommand(const char* command)
+char* PushSegmentString(const char* segment, const char* value)
+{
+    const char* tmp = "@%s\nD=M\n@%s\nD=D+A\nA=D\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+    char* p = malloc((StrLen(value) + StrLen(tmp) - 4 + StrLen(segment) + 1) * sizeof(char));
+
+    sprintf(p, tmp, segment, value);
+    return p;
+}
+
+char* PopSegmentString(const char* segment, const char* value)
+{
+    const char* tmp = "@%s\nD=M\n@%s\nD=D+A\n@R13\nM=D\n@SP\nAM=M-1\nD=M\n@R13\nA=M\nM=D\n";
+    char* p = malloc((StrLen(value) + StrLen(tmp) - 4 + StrLen(segment) + 1) * sizeof(char));
+
+    sprintf(p, tmp, segment, value);
+    return p;
+}
+
+char* ParsePushCommand(const char* command, const int n)
+{
+    const char* segment = ParseSegment(command);
+    if (segment == NULL)
+    {
+        fprintf(stderr, "Segment is missing from push command in line %d\n", n);
+        exit(1);
+    }
+    const char* value = ParseValue(command);
+    if (value == NULL)
+    {
+        free((void*) segment);
+        fprintf(stderr, "Number is missing from push command in line %d\n", n);
+        exit(1);
+    }
+
+    if (StrCmp(segment, "constant"))
+    {
+        // 28 is the lenght of the asm command
+        char* p = malloc((StrLen(value) + 28 + 1) * sizeof(char));
+        sprintf(p, "@%s\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n", value);
+
+        free((void*) segment);
+        free((void*) value);
+
+        return p;
+    }
+    if (StrCmp(segment, "local"))
+    {
+        return PushSegmentString("LCL", value);
+    }
+    if (StrCmp(segment, "argument"))
+    {
+        return PushSegmentString("ARG", value);
+    }
+    if (StrCmp(segment, "this"))
+    {
+        return PushSegmentString("THIS", value);
+    }
+    if (StrCmp(segment, "that"))
+    {
+        return PushSegmentString("THAT", value);
+    }
+    if (StrCmp(segment, "temp"))
+    {
+
+    }
+    if (StrCmp(segment, "pointer"))
+    {
+
+    }
+    if (StrCmp(segment, "static"))
+    {
+
+    }
+
+    free((void*) segment);
+    free((void*) value);
+    fprintf(stderr, "Unrecognized push command '%s' in line %d\n", command, n);
+    exit(1);
+}
+
+char* ParsePopCommand(const char* command, const int n)
+{
+    const char* segment = ParseSegment(command);
+    if (segment == NULL)
+    {
+        fprintf(stderr, "Segment is missing from pop command in line %d\n", n);
+        exit(1);
+    }
+    const char* value = ParseValue(command);
+    if (value == NULL)
+    {
+        free((void*) segment);
+        fprintf(stderr, "Number is missing from pop command in line %d\n", n);
+        exit(1);
+    }
+
+    if (StrCmp(segment, "local"))
+    {
+        return PopSegmentString("LCL", value);
+    }
+    if (StrCmp(segment, "argument"))
+    {
+        return PopSegmentString("ARG", value);
+    }
+    if (StrCmp(segment, "this"))
+    {
+        return PopSegmentString("THIS", value);
+    }
+    if (StrCmp(segment, "that"))
+    {
+        return PopSegmentString("THAT", value);
+    }
+    if (StrCmp(segment, "temp"))
+    {
+
+    }
+    if (StrCmp(segment, "pointer"))
+    {
+
+    }
+    if (StrCmp(segment, "static"))
+    {
+
+    }
+
+    free((void*) segment);
+    free((void*) value);
+    fprintf(stderr, "Unrecognized pop command '%s' in line %d\n", command, n);
+    exit(1);
+}
+
+char* ParseCommand(const char* command, const int n)
 {
     const char* op = ParseOp(command);
     if (op == NULL) return NULL;
@@ -134,22 +273,24 @@ char* ParseCommand(const char* command)
         return p;
     }
 
-
     if (StrCmp(op, "push"))
     {
-        const char* segment = ParseSegment(command);
+        char* p = ParsePushCommand(command, n);
+        if (p == NULL) return NULL;
 
-        if (StrCmp(segment, "constant"))
-        {
-
-        }
+        return p;
     }
-    // if (StrCmp(op, "pop"))
-    // {
-    //
-    // }
 
-    free(op);
-    fprintf(stderr, "Unrecognized command '%s' in line n\n", command);
+    if (StrCmp(op, "pop"))
+    {
+        char* p = ParsePopCommand(command, n);
+        if (p == NULL) return NULL;
+
+        return p;
+
+    }
+
+    free((void*) op);
+    fprintf(stderr, "Unrecognized command '%s' in line %d\n", command, n);
     exit(1);
 }
