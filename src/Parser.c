@@ -1,6 +1,8 @@
 #include "Parser.h"
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "Utils.h"
 
@@ -62,55 +64,92 @@ char* ParseValue(const char* command)
     return ParseNWord(command, 3);
 }
 
-char* ParseCommand(const char* command)
+char* ParseArithmeticCommand(const char* command)
 {
-    char* op = ParseOp(command);
-
+    const char* op = ParseOp(command);
     if (op == NULL) return NULL;
 
     if (StrCmp(op, "add"))
     {
-        free(op);
+        free((void*) op);
         return "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nM=D+M\n";
     }
     if (StrCmp(op, "sub"))
     {
-        free(op);
+        free((void*) op);
         return "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nM=M-D\n";
     }
     if (StrCmp(op, "neg"))
     {
-        free(op);
+        free((void*) op);
         return "@SP\nA=M-1\nM=-M\n";
     }
     if (StrCmp(op, "eq"))
     {
-        free(op);
+        free((void*) op);
         return "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nD=D-M\n@EQ1\nD;JEQ\n@SP\nA=M-1\nM=0\n@END1\n0;JMP\n(EQ1)\n@SP\nA=M-1\nM=1\n(END1)\n";
     }
     if (StrCmp(op, "gt"))
     {
-        free(op);
+        free((void*) op);
         return "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nD=M-D\n@GT1\nD;JGT\n@SP\nA=M-1\nM=0\n@END1\n0;JMP\n(GT1)\n@SP\nA=M-1\nM=1\n(END1)\n";
     }
     if (StrCmp(op, "lt"))
     {
-        free(op);
+        free((void*) op);
         return "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nD=M-D\n@GT1\nD;JLT\n@SP\nA=M-1\nM=0\n@END1\n0;JMP\n(GT1)\n@SP\nA=M-1\nM=1\n(END1)\n";
     }
     if (StrCmp(op, "and"))
     {
-        free(op);
+        free((void*) op);
         return "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nM=D&M\n";
     }
     if (StrCmp(op, "or"))
     {
-        free(op);
+        free((void*) op);
         return "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nM=D|M\n";
     }
     if (StrCmp(op, "not"))
     {
-        free(op);
+        free((void*) op);
         return "@SP\nA=M-1\nM=!M\n";
     }
+
+    return NULL;
+}
+
+char* ParseCommand(const char* command)
+{
+    const char* op = ParseOp(command);
+    if (op == NULL) return NULL;
+
+    const char* parsedArithmeticCommand = ParseArithmeticCommand(command);
+    if (parsedArithmeticCommand != NULL)
+    {
+        const int len = StrLen(parsedArithmeticCommand);
+        char* p = malloc((len + 1) * sizeof(char));
+
+        strcpy(p, parsedArithmeticCommand);
+
+        return p;
+    }
+
+
+    if (StrCmp(op, "push"))
+    {
+        const char* segment = ParseSegment(command);
+
+        if (StrCmp(segment, "constant"))
+        {
+
+        }
+    }
+    // if (StrCmp(op, "pop"))
+    // {
+    //
+    // }
+
+    free(op);
+    fprintf(stderr, "Unrecognized command '%s' in line n\n", command);
+    exit(1);
 }

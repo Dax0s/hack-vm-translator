@@ -145,6 +145,17 @@ M=D
 @SP
 M=M+1
 
+---- push static i
+@i
+D=A
+@SP
+A=M
+M=D
+@SP
+M=M+1
+
+
+
 ---- push pointer 0/1 -> *SP = THIS/THAT, SP++
 @THIS
 D=M
@@ -161,3 +172,4 @@ D=M
 M=D
 
 [local, argument, this, that] -> [LCL, ARG, THIS, THAT]
+local, argument, this, that, constant, static, temp, pointer
