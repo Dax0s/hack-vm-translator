@@ -292,7 +292,7 @@ char* ParsePopCommand(const char* command, const int n)
     exit(1);
 }
 
-char* ParseCommand(const char* command, const int n)
+char* ParseCommand(const char* command, const char* filename, const int lineNum, int* staticNum)
 {
     const char* op = ParseOp(command);
     if (op == NULL) return NULL;
@@ -310,7 +310,7 @@ char* ParseCommand(const char* command, const int n)
 
     if (StrCmp(op, "push"))
     {
-        char* p = ParsePushCommand(command, n);
+        char* p = ParsePushCommand(command, lineNum);
         if (p == NULL) return NULL;
 
         return p;
@@ -318,7 +318,7 @@ char* ParseCommand(const char* command, const int n)
 
     if (StrCmp(op, "pop"))
     {
-        char* p = ParsePopCommand(command, n);
+        char* p = ParsePopCommand(command, lineNum);
         if (p == NULL) return NULL;
 
         return p;
@@ -326,6 +326,6 @@ char* ParseCommand(const char* command, const int n)
     }
 
     free((void*) op);
-    fprintf(stderr, "Unrecognized command '%s' in line %d\n", command, n);
+    fprintf(stderr, "Unrecognized command '%s' in line %d\n", command, lineNum);
     exit(1);
 }
