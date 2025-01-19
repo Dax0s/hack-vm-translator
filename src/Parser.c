@@ -141,7 +141,7 @@ char* PopSegmentString(const char* segment, const char* value)
     return p;
 }
 
-char* ParsePushCommand(const char* command, const int n)
+char* ParsePushCommand(const char* command, const char* filename, const int n)
 {
     const char* segment = ParseSegment(command);
     if (segment == NULL)
@@ -213,7 +213,11 @@ char* ParsePushCommand(const char* command, const int n)
     }
     if (StrCmp(segment, "static"))
     {
+        const char* tmp = "@%s.%s\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        char* p = malloc((StrLen(tmp) - 4 + StrLen(filename) + StrLen(value) + 1) * sizeof(char));
 
+        sprintf(p, tmp, filename, value);
+        return p;
     }
 
     free((void*) segment);
@@ -222,7 +226,7 @@ char* ParsePushCommand(const char* command, const int n)
     exit(1);
 }
 
-char* ParsePopCommand(const char* command, const int n)
+char* ParsePopCommand(const char* command, const char* filename, const int n)
 {
     const char* segment = ParseSegment(command);
     if (segment == NULL)
@@ -283,7 +287,11 @@ char* ParsePopCommand(const char* command, const int n)
     }
     if (StrCmp(segment, "static"))
     {
+        const char* tmp = "@SP\nAM=M-1\nD=M\n@%s.%s\nM=D\n";
+        char* p = malloc((StrLen(tmp) - 4 + StrLen(filename) + StrLen(value) + 1) * sizeof(char));
 
+        sprintf(p, tmp, filename, value);
+        return p;
     }
 
     free((void*) segment);
@@ -292,7 +300,7 @@ char* ParsePopCommand(const char* command, const int n)
     exit(1);
 }
 
-char* ParseCommand(const char* command, const char* filename, const int lineNum, int* staticNum)
+char* ParseCommand(const char* command, const char* filename, const int lineNum)
 {
     const char* op = ParseOp(command);
     if (op == NULL) return NULL;
@@ -310,7 +318,7 @@ char* ParseCommand(const char* command, const char* filename, const int lineNum,
 
     if (StrCmp(op, "push"))
     {
-        char* p = ParsePushCommand(command, lineNum);
+        char* p = ParsePushCommand(command, filename, lineNum);
         if (p == NULL) return NULL;
 
         return p;
@@ -318,7 +326,7 @@ char* ParseCommand(const char* command, const char* filename, const int lineNum,
 
     if (StrCmp(op, "pop"))
     {
-        char* p = ParsePopCommand(command, lineNum);
+        char* p = ParsePopCommand(command, filename, lineNum);
         if (p == NULL) return NULL;
 
         return p;

@@ -191,5 +191,21 @@ D=M
 @THIS
 M=D
 
+push static i
+@Filename.i
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+
+pop static i
+@SP
+AM=M-1
+D=M
+@Filename.i
+M=D
+
 [local, argument, this, that] -> [LCL, ARG, THIS, THAT]
 local, argument, this, that, constant, static, temp, pointer
