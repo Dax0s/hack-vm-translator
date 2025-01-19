@@ -198,7 +198,18 @@ char* ParsePushCommand(const char* command, const int n)
     }
     if (StrCmp(segment, "pointer"))
     {
+        const char* tmp = "@%s\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        char* p = malloc((StrLen(tmp) - 2 + 4 + 1) * sizeof(char));
+        if (StrCmp(value, "0"))
+        {
+            sprintf(p, tmp, "THIS");
+        }
+        else
+        {
+            sprintf(p, tmp, "THAT");
+        }
 
+        return p;
     }
     if (StrCmp(segment, "static"))
     {
@@ -257,7 +268,18 @@ char* ParsePopCommand(const char* command, const int n)
     }
     if (StrCmp(segment, "pointer"))
     {
+        const char* tmp = "@SP\nAM=M-1\nD=M\n@%s\nM=D\n";
+        char* p = malloc((StrLen(tmp) - 2 + 4 + 1) * sizeof(char));
+        if (StrCmp(value, "0"))
+        {
+            sprintf(p, tmp, "THIS");
+        }
+        else
+        {
+            sprintf(p, tmp, "THAT");
+        }
 
+        return p;
     }
     if (StrCmp(segment, "static"))
     {
