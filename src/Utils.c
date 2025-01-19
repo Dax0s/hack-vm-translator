@@ -1,5 +1,6 @@
 #include "Utils.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -80,6 +81,16 @@ int ParseInt(const char *s, int* parsedInt)
         i++;
     }
 
-    *parsedInt = parsed;
+    if (parsedInt != NULL)
+    {
+        *parsedInt = parsed;
+    }
     return 1;
+}
+
+int IntLength(const int value)
+{
+    if (value == 0) return 0;
+
+    return (int) floor(log10(abs(value))) + 1;
 }

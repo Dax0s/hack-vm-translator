@@ -64,10 +64,7 @@ char* ParseValue(const char* command)
     char* p = ParseNWord(command, 3);
     if (p == NULL) return NULL;
 
-    for (int i = 0; p[i] != '\0'; i++)
-    {
-        if (p[i] < '0' || p[i] > '9') return NULL;
-    }
+    if (ParseInt(p, NULL)) return p;
 
     return p;
 }
@@ -189,7 +186,15 @@ char* ParsePushCommand(const char* command, const int n)
     }
     if (StrCmp(segment, "temp"))
     {
+        int num;
+        ParseInt(value, &num);
+        num += 5;
 
+        const char* tmp = "@%d\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        char* p = malloc((StrLen(tmp) - 2 + IntLength(num) + 1) * sizeof(char));
+
+        sprintf(p, tmp, num);
+        return p;
     }
     if (StrCmp(segment, "pointer"))
     {
@@ -240,7 +245,15 @@ char* ParsePopCommand(const char* command, const int n)
     }
     if (StrCmp(segment, "temp"))
     {
+        int num;
+        ParseInt(value, &num);
+        num += 5;
 
+        const char* tmp = "@SP\nAM=M-1\nD=M\n@%d\nM=D\n";
+        char* p = malloc((StrLen(tmp) - 2 + IntLength(num) + 1) * sizeof(char));
+
+        sprintf(p, tmp, num);
+        return p;
     }
     if (StrCmp(segment, "pointer"))
     {

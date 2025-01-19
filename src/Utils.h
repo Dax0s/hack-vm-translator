@@ -12,5 +12,6 @@ char* Clean(const char *s);
  * @return 0 - parsing failed 1 - parsing succeeded
  */
 int ParseInt(const char *s, int* parsedInt);
+int IntLength(int value);
 
 #endif //UTILS_H
