@@ -120,6 +120,7 @@ char* ParseArithmeticCommand(const char* command)
         return "@SP\nA=M-1\nM=!M\n";
     }
 
+    free((void*) op);
     return NULL;
 }
 
@@ -129,6 +130,7 @@ char* PushSegmentString(const char* segment, const char* value)
     char* p = malloc((StrLen(value) + StrLen(tmp) - 4 + StrLen(segment) + 1) * sizeof(char));
 
     sprintf(p, tmp, segment, value);
+    free((void*) value);
     return p;
 }
 
@@ -138,6 +140,7 @@ char* PopSegmentString(const char* segment, const char* value)
     char* p = malloc((StrLen(value) + StrLen(tmp) - 4 + StrLen(segment) + 1) * sizeof(char));
 
     sprintf(p, tmp, segment, value);
+    free((void*) value);
     return p;
 }
 
@@ -170,18 +173,22 @@ char* ParsePushCommand(const char* command, const char* filename, const int n)
     }
     if (StrCmp(segment, "local"))
     {
+        free((void*) segment);
         return PushSegmentString("LCL", value);
     }
     if (StrCmp(segment, "argument"))
     {
+        free((void*) segment);
         return PushSegmentString("ARG", value);
     }
     if (StrCmp(segment, "this"))
     {
+        free((void*) segment);
         return PushSegmentString("THIS", value);
     }
     if (StrCmp(segment, "that"))
     {
+        free((void*) segment);
         return PushSegmentString("THAT", value);
     }
     if (StrCmp(segment, "temp"))
@@ -194,6 +201,9 @@ char* ParsePushCommand(const char* command, const char* filename, const int n)
         char* p = malloc((StrLen(tmp) - 2 + IntLength(num) + 1) * sizeof(char));
 
         sprintf(p, tmp, num);
+
+        free((void*) segment);
+        free((void*) value);
         return p;
     }
     if (StrCmp(segment, "pointer"))
@@ -209,6 +219,8 @@ char* ParsePushCommand(const char* command, const char* filename, const int n)
             sprintf(p, tmp, "THAT");
         }
 
+        free((void*) segment);
+        free((void*) value);
         return p;
     }
     if (StrCmp(segment, "static"))
@@ -217,6 +229,9 @@ char* ParsePushCommand(const char* command, const char* filename, const int n)
         char* p = malloc((StrLen(tmp) - 4 + StrLen(filename) + StrLen(value) + 1) * sizeof(char));
 
         sprintf(p, tmp, filename, value);
+
+        free((void*) segment);
+        free((void*) value);
         return p;
     }
 
@@ -244,18 +259,22 @@ char* ParsePopCommand(const char* command, const char* filename, const int n)
 
     if (StrCmp(segment, "local"))
     {
+        free((void*) segment);
         return PopSegmentString("LCL", value);
     }
     if (StrCmp(segment, "argument"))
     {
+        free((void*) segment);
         return PopSegmentString("ARG", value);
     }
     if (StrCmp(segment, "this"))
     {
+        free((void*) segment);
         return PopSegmentString("THIS", value);
     }
     if (StrCmp(segment, "that"))
     {
+        free((void*) segment);
         return PopSegmentString("THAT", value);
     }
     if (StrCmp(segment, "temp"))
@@ -268,6 +287,9 @@ char* ParsePopCommand(const char* command, const char* filename, const int n)
         char* p = malloc((StrLen(tmp) - 2 + IntLength(num) + 1) * sizeof(char));
 
         sprintf(p, tmp, num);
+
+        free((void*) segment);
+        free((void*) value);
         return p;
     }
     if (StrCmp(segment, "pointer"))
@@ -283,6 +305,8 @@ char* ParsePopCommand(const char* command, const char* filename, const int n)
             sprintf(p, tmp, "THAT");
         }
 
+        free((void*) segment);
+        free((void*) value);
         return p;
     }
     if (StrCmp(segment, "static"))
@@ -291,6 +315,9 @@ char* ParsePopCommand(const char* command, const char* filename, const int n)
         char* p = malloc((StrLen(tmp) - 4 + StrLen(filename) + StrLen(value) + 1) * sizeof(char));
 
         sprintf(p, tmp, filename, value);
+
+        free((void*) segment);
+        free((void*) value);
         return p;
     }
 
@@ -313,11 +340,14 @@ char* ParseCommand(const char* command, const char* filename, const int lineNum)
 
         strcpy(p, parsedArithmeticCommand);
 
+        free((void*) op);
         return p;
     }
 
     if (StrCmp(op, "push"))
     {
+        free((void*) op);
+
         char* p = ParsePushCommand(command, filename, lineNum);
         if (p == NULL) return NULL;
 
@@ -326,6 +356,8 @@ char* ParseCommand(const char* command, const char* filename, const int lineNum)
 
     if (StrCmp(op, "pop"))
     {
+        free((void*) op);
+
         char* p = ParsePopCommand(command, filename, lineNum);
         if (p == NULL) return NULL;
 

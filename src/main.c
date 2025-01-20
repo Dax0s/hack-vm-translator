@@ -4,38 +4,52 @@
 #include "Parser.h"
 #include "Utils.h"
 
-/**
- * add
- * @SP
- * AM=M-1
- * D=M
- * @SP
- * AM=M-1
- * M=D+M
- *
- * @SP
- * M=M+1
- *
- * sub
- * neg
- * eq
- * gt
- * lt
- * and
- * or
- * not
- * pop segment i
- * push segment i
- * push pointer 0/1 -> *SP = THIS/THAT, SP++
- * [local, argument, this, that] -> [LCL, ARG, THIS, THAT]
- */
-int main(void) {
-    const char* command = "add local 2";
-    char* cmd = ParseCommand(command);
-    char* segment = ParseSegment(command);
-    char* value = ParseValue(command);
-    printf("%s %s %s\n", cmd, segment, value);
+int main(const int argc, char **argv) {
+    if (argc != 2)
+    {
+        printf("Usage: ./VMTranslator <input_file>\n");
+        return 1;
+    }
 
-    free(cmd);
+    FILE* input = fopen(argv[1], "r");
+    if (input == NULL)
+    {
+        printf("Could not open file %s\n", argv[1]);
+        return 1;
+    }
+    const char* outputFileName = OutputFileName(argv[1]);
+    FILE* output = fopen(outputFileName, "w");
+
+    char line[256];
+    int lineNum = 1;
+    while (fgets(line, sizeof(line), input))
+    {
+        const char* clean = Clean(line);
+        if (!StrCmp(clean, "") && !(clean[0] == '/' && clean[1] == '/'))
+        {
+            const int len = StrLen(line);
+            if (line[len - 1] != '\n')
+            {
+                fprintf(output, "// %s\n", line);
+            }
+            else
+            {
+                fprintf(output, "// %s", line);
+            }
+
+            const char* parsedCommand = ParseCommand(line, argv[1], lineNum++);
+            fprintf(output, "%s", parsedCommand);
+            free((void*) parsedCommand);
+        }
+
+        free((void*) clean);
+    }
+
+    free((void*) outputFileName);
+    fclose(input);
+    fclose(output);
+
+    getchar();
+
     return 0;
 }

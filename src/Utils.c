@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int StrCmp(const char *s1, const char *s2)
 {
@@ -93,4 +94,24 @@ int IntLength(const int value)
     if (value == 0) return 0;
 
     return (int) floor(log10(abs(value))) + 1;
+}
+
+char* OutputFileName(const char* inputFileName)
+{
+    if (inputFileName == NULL) return NULL;
+    char* outputFileName = malloc((StrLen(inputFileName) + 1 + 1) * sizeof(char));
+    if (outputFileName == NULL) return NULL;
+
+    int i;
+    for (i = 0; inputFileName[i - 1] != '.'; i++)
+    {
+        outputFileName[i] = inputFileName[i];
+    }
+
+    outputFileName[i++] = 'a';
+    outputFileName[i++] = 's';
+    outputFileName[i++] = 'm';
+    outputFileName[i] = '\0';
+
+    return outputFileName;
 }
