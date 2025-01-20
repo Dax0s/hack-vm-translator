@@ -69,55 +69,103 @@ char* ParseValue(const char* command)
     return p;
 }
 
-char* ParseArithmeticCommand(const char* command)
+char* ParseArithmeticCommand(const char* command, int* eqNum, int* gtNum, int* ltNum)
 {
     const char* op = ParseOp(command);
     if (op == NULL) return NULL;
 
     if (StrCmp(op, "add"))
     {
+        const char* tmp = "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nM=D+M\n";
+        char* p = malloc((StrLen(tmp) + 1) * sizeof(char));
+
+        sprintf(p, "%s", tmp);
+
         free((void*) op);
-        return "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nM=D+M\n";
+        return p;
     }
     if (StrCmp(op, "sub"))
     {
+        const char* tmp = "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nM=M-D\n";
+        char* p = malloc((StrLen(tmp) + 1) * sizeof(char));
+
+        sprintf(p, "%s", tmp);
+
         free((void*) op);
-        return "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nM=M-D\n";
+        return p;
     }
     if (StrCmp(op, "neg"))
     {
+        const char* tmp = "@SP\nA=M-1\nM=-M\n";
+        char* p = malloc((StrLen(tmp) + 1) * sizeof(char));
+
+        sprintf(p, "%s", tmp);
+
         free((void*) op);
-        return "@SP\nA=M-1\nM=-M\n";
+        return p;
     }
     if (StrCmp(op, "eq"))
     {
+        const char* tmp = "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nD=D-M\n@EQ%d\nD;JEQ\n@SP\nA=M-1\nM=0\n@END_EQ%d\n0;JMP\n(EQ%d)\n@SP\nA=M-1\nM=-1\n(END_EQ%d)\n";
+        char* p = malloc((StrLen(tmp) - 8 + IntLength(*eqNum) + 1) * sizeof(char));
+
+        sprintf(p, tmp, *eqNum, *eqNum, *eqNum, *eqNum);
+        (*eqNum)++;
+
         free((void*) op);
-        return "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nD=D-M\n@EQ1\nD;JEQ\n@SP\nA=M-1\nM=0\n@END1\n0;JMP\n(EQ1)\n@SP\nA=M-1\nM=1\n(END1)\n";
+        return p;
     }
     if (StrCmp(op, "gt"))
     {
+        const char* tmp = "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nD=M-D\n@GT%d\nD;JGT\n@SP\nA=M-1\nM=0\n@END_GT%d\n0;JMP\n(GT%d)\n@SP\nA=M-1\nM=-1\n(END_GT%d)\n";
+        char* p = malloc((StrLen(tmp) - 8 + IntLength(*gtNum) + 1) * sizeof(char));
+
+        sprintf(p, tmp, *gtNum, *gtNum, *gtNum, *gtNum);
+        (*gtNum)++;
+
         free((void*) op);
-        return "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nD=M-D\n@GT1\nD;JGT\n@SP\nA=M-1\nM=0\n@END1\n0;JMP\n(GT1)\n@SP\nA=M-1\nM=1\n(END1)\n";
+        return p;
     }
     if (StrCmp(op, "lt"))
     {
+        const char* tmp = "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nD=M-D\n@LT%d\nD;JLT\n@SP\nA=M-1\nM=0\n@END_LT%d\n0;JMP\n(LT%d)\n@SP\nA=M-1\nM=-1\n(END_LT%d)\n";
+        char* p = malloc((StrLen(tmp) - 8 + IntLength(*ltNum) + 1) * sizeof(char));
+
+        sprintf(p, tmp, *ltNum, *ltNum, *ltNum, *ltNum);
+        (*ltNum)++;
+
         free((void*) op);
-        return "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nD=M-D\n@GT1\nD;JLT\n@SP\nA=M-1\nM=0\n@END1\n0;JMP\n(GT1)\n@SP\nA=M-1\nM=1\n(END1)\n";
+        return p;
     }
     if (StrCmp(op, "and"))
     {
+        const char* tmp = "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nM=D&M\n";
+        char* p = malloc((StrLen(tmp) + 1) * sizeof(char));
+
+        sprintf(p, "%s", tmp);
+
         free((void*) op);
-        return "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nM=D&M\n";
+        return p;
     }
     if (StrCmp(op, "or"))
     {
+        const char* tmp = "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nM=D|M\n";
+        char* p = malloc((StrLen(tmp) + 1) * sizeof(char));
+
+        sprintf(p, "%s", tmp);
+
         free((void*) op);
-        return "@SP\nAM=M-1\nD=M\n@SP\nA=M-1\nM=D|M\n";
+        return p;
     }
     if (StrCmp(op, "not"))
     {
+        const char* tmp = "@SP\nA=M-1\nM=!M\n";
+        char* p = malloc((StrLen(tmp) + 1) * sizeof(char));
+
+        sprintf(p, "%s", tmp);
+
         free((void*) op);
-        return "@SP\nA=M-1\nM=!M\n";
+        return p;
     }
 
     free((void*) op);
@@ -162,9 +210,9 @@ char* ParsePushCommand(const char* command, const char* filename, const int n)
 
     if (StrCmp(segment, "constant"))
     {
-        // 28 is the lenght of the asm command
-        char* p = malloc((StrLen(value) + 28 + 1) * sizeof(char));
-        sprintf(p, "@%s\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n", value);
+        const char* tmp = "@%s\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        char* p = malloc((StrLen(tmp) - 2 + StrLen(value) + 1) * sizeof(char));
+        sprintf(p, tmp, value);
 
         free((void*) segment);
         free((void*) value);
@@ -327,21 +375,16 @@ char* ParsePopCommand(const char* command, const char* filename, const int n)
     exit(1);
 }
 
-char* ParseCommand(const char* command, const char* filename, const int lineNum)
+char* ParseCommand(const char* command, const char* filename, const int lineNum, int* eqNum, int* gtNum, int* ltNum)
 {
     const char* op = ParseOp(command);
     if (op == NULL) return NULL;
 
-    const char* parsedArithmeticCommand = ParseArithmeticCommand(command);
+    char* parsedArithmeticCommand = ParseArithmeticCommand(command, eqNum, gtNum, ltNum);
     if (parsedArithmeticCommand != NULL)
     {
-        const int len = StrLen(parsedArithmeticCommand);
-        char* p = malloc((len + 1) * sizeof(char));
-
-        strcpy(p, parsedArithmeticCommand);
-
         free((void*) op);
-        return p;
+        return parsedArithmeticCommand;
     }
 
     if (StrCmp(op, "push"))

@@ -22,10 +22,13 @@ int main(const int argc, char **argv) {
 
     char line[256];
     int lineNum = 1;
+    int eqNum = 0;
+    int gtNum = 0;
+    int ltNum = 0;
     while (fgets(line, sizeof(line), input))
     {
         const char* clean = Clean(line);
-        if (!StrCmp(clean, "") && !(clean[0] == '/' && clean[1] == '/'))
+        if (clean != NULL && !(clean[0] == '/' && clean[1] == '/'))
         {
             const int len = StrLen(line);
             if (line[len - 1] != '\n')
@@ -37,7 +40,7 @@ int main(const int argc, char **argv) {
                 fprintf(output, "// %s", line);
             }
 
-            const char* parsedCommand = ParseCommand(line, argv[1], lineNum++);
+            const char* parsedCommand = ParseCommand(line, argv[1], lineNum++, &eqNum, &gtNum, &ltNum);
             fprintf(output, "%s", parsedCommand);
             free((void*) parsedCommand);
         }
@@ -48,8 +51,6 @@ int main(const int argc, char **argv) {
     free((void*) outputFileName);
     fclose(input);
     fclose(output);
-
-    getchar();
 
     return 0;
 }

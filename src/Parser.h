@@ -9,6 +9,6 @@ char* ParseSegment(const char* command);
 
 char* ParseValue(const char* command);
 
-char* ParseCommand(const char* command, const char* filename, int lineNum);
+char* ParseCommand(const char* command, const char* filename, int lineNum, int* eqNum, int* gtNum, int* ltNum);
 
 #endif //PARSER_H
