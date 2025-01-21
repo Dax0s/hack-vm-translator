@@ -8,3 +8,5 @@ add_executable(VMTranslator src/main.c
         src/Parser.h
         src/Utils.c
         src/Utils.h)
+
+target_link_libraries(VMTranslator m)
