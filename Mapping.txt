@@ -1,0 +1,14 @@
+﻿Hack RAM
+
+0: SP
+1: LCL
+2: ARG
+3: THIS
+4: THAT
+5-12: temp segment
+13-15: general purpose registers
+16-255: static variables
+256-2047: stack
+2048-16383: heap
+16384-24567: memory mapped I/O
+24577-32767: unused memory space
