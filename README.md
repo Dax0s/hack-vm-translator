@@ -1,9 +1,9 @@
-## Running the VM Translator
+# VM Translator
 
-`cmake -S . -B build`
-<br>
-`cd build`
-<br>
-`make`
-<br>
-`./VMTranslator <file>`
+Build and run:
+```bash
+cmake -S . -B build
+cd build
+make
+./VMTranslator <file>
+```
