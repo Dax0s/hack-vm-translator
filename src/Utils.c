@@ -115,3 +115,20 @@ char* OutputFileName(const char* inputFileName)
 
     return outputFileName;
 }
+
+char* FilenameWithoutExtension(const char* inputFilename)
+{
+   if (inputFilename == NULL) return NULL;
+
+    char* outputFilename = malloc((StrLen(inputFilename) - 3 + 1) * sizeof(char));
+    if (outputFilename == NULL) return NULL;
+
+    int i;
+    for (i = 0; inputFilename[i] != '.'; i++)
+    {
+        outputFilename[i] = inputFilename[i];
+    }
+    outputFilename[i] = '\0';
+
+    return outputFilename;
+}

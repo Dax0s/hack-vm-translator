@@ -274,12 +274,14 @@ char* ParsePushCommand(const char* command, const char* filename, const int n)
     if (StrCmp(segment, "static"))
     {
         const char* tmp = "@%s.%s\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
-        char* p = malloc((StrLen(tmp) - 4 + StrLen(filename) + StrLen(value) + 1) * sizeof(char));
+        const char* filenameWithoutExtension = FilenameWithoutExtension(filename);
+        char* p = malloc((StrLen(tmp) - 4 + StrLen(filenameWithoutExtension) + StrLen(value) + 1) * sizeof(char));
 
-        sprintf(p, tmp, filename, value);
+        sprintf(p, tmp, filenameWithoutExtension, value);
 
         free((void*) segment);
         free((void*) value);
+        free((void*) filenameWithoutExtension);
         return p;
     }
 
@@ -360,12 +362,14 @@ char* ParsePopCommand(const char* command, const char* filename, const int n)
     if (StrCmp(segment, "static"))
     {
         const char* tmp = "@SP\nAM=M-1\nD=M\n@%s.%s\nM=D\n";
-        char* p = malloc((StrLen(tmp) - 4 + StrLen(filename) + StrLen(value) + 1) * sizeof(char));
+        const char* filenameWithoutExtension = FilenameWithoutExtension(filename);
+        char* p = malloc((StrLen(tmp) - 4 + StrLen(filenameWithoutExtension) + StrLen(value) + 1) * sizeof(char));
 
-        sprintf(p, tmp, filename, value);
+        sprintf(p, tmp, filenameWithoutExtension, value);
 
         free((void*) segment);
         free((void*) value);
+        free((void*) filenameWithoutExtension);
         return p;
     }
 

@@ -15,5 +15,7 @@ int ParseInt(const char *s, int* parsedInt);
 int IntLength(int value);
 
 char* OutputFileName(const char* inputFileName);
+char* FilenameWithoutExtension(const char* inputFilename);
+
 
 #endif //UTILS_H
