@@ -379,18 +379,59 @@ char* ParsePopCommand(const char* command, const char* filename, const int n)
     exit(1);
 }
 
-char* ParseCommand(const char* command, const char* filename, const int lineNum, int* eqNum, int* gtNum, int* ltNum)
+char* ParseBranchingCommand(const char* command)
 {
     const char* op = ParseOp(command);
     if (op == NULL) return NULL;
 
+    const char* label = ParseNWord(command, 2);
+    if (label == NULL) return NULL;
+
+    char* p = NULL;
+    if (StrCmp(op, "label"))
+    {
+        const char* tmp = "(%s)\n";
+        p = malloc((StrLen(tmp) - 2 + StrLen(label) + 1) * sizeof(char));
+
+        sprintf(p, tmp, label);
+
+    }
+    else if (StrCmp(op, "goto"))
+    {
+        const char* tmp = "@%s\n0;JMP\n";
+        p = malloc((StrLen(tmp) - 2 + StrLen(label) + 1) * sizeof(char));
+
+        sprintf(p, tmp, label);
+    }
+    else if (StrCmp(op, "if-goto"))
+    {
+        const char* tmp = "@SP\nAM=M-1\nD=M\n@%s\nD;JNE\n";
+        p = malloc((StrLen(tmp) - 2 + StrLen(label) + 1) * sizeof(char));
+
+        sprintf(p, tmp, label);
+    }
+
+    free((void*) op);
+    free((void*) label);
+    return p;
+}
+
+char* ParseCommand(const char* command, const char* filename, const int lineNum, int* eqNum, int* gtNum, int* ltNum)
+{
     char* parsedArithmeticCommand = ParseArithmeticCommand(command, eqNum, gtNum, ltNum);
     if (parsedArithmeticCommand != NULL)
     {
-        free((void*) op);
         return parsedArithmeticCommand;
     }
 
+    char* parsedBranchingCommand = ParseBranchingCommand(command);
+    if (parsedBranchingCommand != NULL)
+    {
+        return parsedBranchingCommand;
+    }
+
+    const char* op = ParseOp(command);
+    if (op == NULL) return NULL;
     if (StrCmp(op, "push"))
     {
         free((void*) op);
