@@ -1,6 +1,4 @@
-﻿Branching
-
-// label LABEL
+﻿// label LABEL
 (LABEL)
 
 // goto LABEL
