@@ -1,0 +1,209 @@
+﻿// -------------------------------
+// nArgs - amount of function arguments
+// call functionName nArgs
+// push call_i
+@call_i
+D=A
+@SP
+A=M
+M=D
+@SP
+M=M+1
+
+"//push call_i\n@call_%d\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"
+
+// push LCL
+@LCL
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+
+"//push LCL\n@LCL\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"
+
+// push ARG
+@ARG
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+
+"//push ARG\n@ARG\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"
+
+// push THIS
+@THIS
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+
+"//push THIS\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"
+
+// push THAT
+@THIS
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+
+"//push THAT\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"
+
+// ARG = SP - 5 - nArgs
+@SP
+D=M
+@5
+D=D-A
+@nArgs
+D=D-nArgs
+@ARG
+M=D
+
+"// ARG=SP-5-nArgs\n@SP\nD=M\@5\nD=D-A\n@%d\nD=D-nArgs\n@ARG\nM=D\n"
+
+// LCL = SP
+@SP
+D=M
+@LCL
+M=D
+
+"// LCL=SP\n@SP\nD=M\n@LCL\nM=D\n"
+
+// goto functionName
+@functionName
+0;JMP
+
+"// goto functionName\n@%s\n0;JMP\n"
+
+(call_i)
+
+"(call_%d)"
+// -------------------------------
+
+
+// -------------------------------
+// nVars - local variables
+// function functionName nVars
+// push 0 nVars times
+(functionName)
+@nVars
+D=A
+@R13
+M=D
+
+(functionName$initLoop)
+@R13
+D=M
+@functionName$initEnd
+D;JEQ
+D=D-1
+@R13
+M=D
+
+@SP
+A=M
+M=0
+@SP
+M=M+1
+
+@functionName$initLoop
+0;JMP
+
+(functionName$initEnd)
+
+"// function functionName nVars\n// push 0 nVars times\n(@%s)\n@%d\nD=A\n@R13\nM=D\n(%s$initLoop)\n@R13\nD=M\n@%s$initEnd\nD;JEQ\nD=D-1\n@R13\nM=D\n@SP\nA=M\nM=0\n@SP\nM=M+1\n@%s$initLoop\n0;JMP\n(%s$initEnd)\n"
+// -------------------------------
+
+// -------------------------------
+// return
+// LCL == end of frame
+
+// retAddr = *(LCL - 5)
+@LCL
+D=M
+@5
+D=D-A
+A=D
+D=M
+@R13
+M=D
+
+"// retAddr=*(LCL-5)\n@LCL\nD=M\n@5\nD=D-A\nA=D\nD=M\n@R13\nM=D\n"
+
+// *ARG = pop()
+@SP
+A=M-1
+D=M
+@ARG
+A=M
+M=D
+
+"// *ARG=pop()\n@SP\nA=M-1\nD=M\n@ARG\nA=M\nM=D\n"
+
+// SP = ARG + 1
+@ARG
+D=M+1
+@SP
+M=D
+
+"// SP=ARG+1\n@ARG\nD=M+1\n@SP\nM=D\n"
+
+// THAT = *(LCL - 1)
+@LCL
+D=M-1
+A=D
+D=M
+@THAT
+M=D
+
+"// THAT=*(LCL-1)\n@LCL\nD=M-1\nA=D\nD=M\n@THAT\nM=D\n"
+
+// THIS = *(LCL - 2)
+@LCL
+D=M
+@2
+D=D-A
+A=D
+D=M
+@THIS
+M=D
+
+"// THIS=*(LCL-2)\n@LCL\nD=M\n@2\nD=D-A\nA=D\nD=M\n@THIS\nM=D\n"
+
+// ARG = *(LCL - 3)
+@LCL
+D=M
+@3
+D=D-A
+A=D
+D=M
+@ARG
+M=D
+
+"// THAT=*(LCL-3)\n@LCL\nD=M\n@3\nD=D-A\nA=D\nD=M\n@THAT\nM=D\n"
+
+// LCL = *(LCL - 4)
+@LCL
+D=M
+@4
+D=D-A
+A=D
+D=M
+@LCL
+M=D
+
+"// LCL=*(LCL-4)\n@LCL\nD=M\n@4\nD=D-A\nA=D\nD=M\n@LCL\nM=D\n"
+
+// goto retAddr
+@R13
+0;JMP
+
+"// goto retAddr\n@R13\n0;JMP\n"
+// -------------------------------
