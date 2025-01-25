@@ -442,6 +442,10 @@ char* ParseFunctionCommand(const char* command, const char* filename, int* retur
     {
         const char* functionName = ParseNWord(command, 2);
         if (functionName == NULL) return NULL;
+        const char* nVars = ParseNWord(command, 3);
+        if (nVars == NULL) return NULL;
+        int nVarsInt;
+        if (!ParseInt(nVars, &nVarsInt)) return NULL;
 
         if (*currentFunction == NULL || !StrCmp(functionName, *currentFunction))
         {
@@ -450,8 +454,10 @@ char* ParseFunctionCommand(const char* command, const char* filename, int* retur
             strcpy(*currentFunction, functionName);
             *returnAddrIndex = 0;
         }
-        p = malloc(12);
-        sprintf(p, "funkcija\n");
+
+        const char* tmp = "(@%s.%s)\n@%d\nD=A\n@R13\nM=D\n(%s.%s$initLoop)\n@R13\nD=M\n@%s.%s$initEnd\nD;JEQ\nD=D-1\n@R13\nM=D\n@SP\nA=M\nM=0\n@SP\nM=M+1\n@%s.%s$initLoop\n0;JMP\n(%s.%s$initEnd)\n";
+        p = malloc((StrLen(tmp) - 22 + StrLen(filename) * 5 + StrLen(functionName) * 5 + IntLength(nVarsInt)) * sizeof(char));
+        sprintf(p, tmp, filename, functionName, nVarsInt, filename, functionName, filename, functionName, filename, functionName, filename, functionName);
     }
 
     free((void*) op);

@@ -92,16 +92,16 @@ M=D
 // nVars - local variables
 // function functionName nVars
 // push 0 nVars times
-(functionName)
+(file.functionName)
 @nVars
 D=A
 @R13
 M=D
 
-(functionName$initLoop)
+(file.functionName$initLoop)
 @R13
 D=M
-@functionName$initEnd
+@file.functionName$initEnd
 D;JEQ
 D=D-1
 @R13
@@ -113,10 +113,10 @@ M=0
 @SP
 M=M+1
 
-@functionName$initLoop
+@file.functionName$initLoop
 0;JMP
 
-(functionName$initEnd)
+(file.functionName$initEnd)
 
 "// function functionName nVars\n// push 0 nVars times\n(@%s)\n@%d\nD=A\n@R13\nM=D\n(%s$initLoop)\n@R13\nD=M\n@%s$initEnd\nD;JEQ\nD=D-1\n@R13\nM=D\n@SP\nA=M\nM=0\n@SP\nM=M+1\n@%s$initLoop\n0;JMP\n(%s$initEnd)\n"
 // -------------------------------
