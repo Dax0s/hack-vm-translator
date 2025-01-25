@@ -27,6 +27,7 @@ int main(const int argc, char **argv) {
     int ltNum = 0;
     int returnAddrIndex = 0;
     char* currentFunction = NULL;
+    const char* filenameWithoutExtension = FilenameWithoutExtension(argv[1]);
     while (fgets(line, sizeof(line), input))
     {
         const char* clean = Clean(line);
@@ -42,7 +43,7 @@ int main(const int argc, char **argv) {
                 fprintf(output, "// %s", clean);
             }
 
-            const char* parsedCommand = ParseCommand(clean, argv[1], lineNum++, &eqNum, &gtNum, &ltNum, &returnAddrIndex, &currentFunction);
+            const char* parsedCommand = ParseCommand(clean, filenameWithoutExtension, lineNum++, &eqNum, &gtNum, &ltNum, &returnAddrIndex, &currentFunction);
             fprintf(output, "%s", parsedCommand);
             free((void*) parsedCommand);
         }
@@ -52,6 +53,7 @@ int main(const int argc, char **argv) {
 
     free(currentFunction);
     free((void*) outputFileName);
+    free((void*) filenameWithoutExtension);
     fclose(input);
     fclose(output);
 
