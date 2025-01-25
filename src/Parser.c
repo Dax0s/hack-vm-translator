@@ -455,9 +455,15 @@ char* ParseFunctionCommand(const char* command, const char* filename, int* retur
             *returnAddrIndex = 0;
         }
 
-        const char* tmp = "(@%s.%s)\n@%d\nD=A\n@R13\nM=D\n(%s.%s$initLoop)\n@R13\nD=M\n@%s.%s$initEnd\nD;JEQ\nD=D-1\n@R13\nM=D\n@SP\nA=M\nM=0\n@SP\nM=M+1\n@%s.%s$initLoop\n0;JMP\n(%s.%s$initEnd)\n";
+        const char* tmp = "(%s.%s)\n@%d\nD=A\n@R13\nM=D\n(%s.%s$initLoop)\n@R13\nD=M\n@%s.%s$initEnd\nD;JEQ\nD=D-1\n@R13\nM=D\n@SP\nA=M\nM=0\n@SP\nM=M+1\n@%s.%s$initLoop\n0;JMP\n(%s.%s$initEnd)\n";
         p = malloc((StrLen(tmp) - 22 + StrLen(filename) * 5 + StrLen(functionName) * 5 + IntLength(nVarsInt)) * sizeof(char));
         sprintf(p, tmp, filename, functionName, nVarsInt, filename, functionName, filename, functionName, filename, functionName, filename, functionName);
+    }
+    else if (StrCmp(op, "return"))
+    {
+        const char* tmp = "// retAddr=*(LCL-5)\n@LCL\nD=M\n@5\nD=D-A\nA=D\nD=M\n@R13\nM=D\n// *ARG=pop()\n@SP\nA=M-1\nD=M\n@ARG\nA=M\nM=D\n// SP=ARG+1\n@ARG\nD=M+1\n@SP\nM=D\n// THAT=*(LCL-1)\n@LCL\nD=M-1\nA=D\nD=M\n@THAT\nM=D\n// THIS=*(LCL-2)\n@LCL\nD=M\n@2\nD=D-A\nA=D\nD=M\n@THIS\nM=D\n// ARG=*(LCL-3)\n@LCL\nD=M\n@3\nD=D-A\nA=D\nD=M\n@ARG\nM=D\n// LCL=*(LCL-4)\n@LCL\nD=M\n@4\nD=D-A\nA=D\nD=M\n@LCL\nM=D\n// goto retAddr\n@R13\nA=M\n0;JMP\n";
+        p = malloc((StrLen(tmp) + 1) * sizeof(char));
+        sprintf(p, "%s", tmp);
     }
 
     free((void*) op);
