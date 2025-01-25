@@ -37,10 +37,12 @@ char* Clean(const char *s)
     if (p == NULL) return NULL;
 
     int j = 0;
+    int cleared = 0;
     for (int i = 0; i < size; i++)
     {
-        if (s[i] != ' ' && s[i] != '\t' && s[i] != '\n' && s[i] != '\r')
+        if ((s[i] != ' ' && s[i] != '\t' && s[i] != '\n' && s[i] != '\r') || cleared)
         {
+            cleared = 1;
             p[j++] = s[i];
         }
     }

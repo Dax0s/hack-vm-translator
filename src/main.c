@@ -25,22 +25,24 @@ int main(const int argc, char **argv) {
     int eqNum = 0;
     int gtNum = 0;
     int ltNum = 0;
+    int returnAddrIndex = 0;
+    char* currentFunction = NULL;
     while (fgets(line, sizeof(line), input))
     {
         const char* clean = Clean(line);
         if (clean != NULL && !(clean[0] == '/' && clean[1] == '/'))
         {
-            const int len = StrLen(line);
-            if (line[len - 1] != '\n')
+            const int len = StrLen(clean);
+            if (clean[len - 1] != '\n')
             {
-                fprintf(output, "// %s\n", line);
+                fprintf(output, "// %s\n", clean);
             }
             else
             {
-                fprintf(output, "// %s", line);
+                fprintf(output, "// %s", clean);
             }
 
-            const char* parsedCommand = ParseCommand(line, argv[1], lineNum++, &eqNum, &gtNum, &ltNum);
+            const char* parsedCommand = ParseCommand(clean, argv[1], lineNum++, &eqNum, &gtNum, &ltNum, &returnAddrIndex, &currentFunction);
             fprintf(output, "%s", parsedCommand);
             free((void*) parsedCommand);
         }
@@ -48,6 +50,7 @@ int main(const int argc, char **argv) {
         free((void*) clean);
     }
 
+    free(currentFunction);
     free((void*) outputFileName);
     fclose(input);
     fclose(output);

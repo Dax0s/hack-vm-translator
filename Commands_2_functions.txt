@@ -1,8 +1,8 @@
 ﻿// -------------------------------
 // nArgs - amount of function arguments
 // call functionName nArgs
-// push call_i
-@call_i
+// push returnAddr_i
+@returnAddr_i
 D=A
 @SP
 A=M
@@ -10,7 +10,7 @@ M=D
 @SP
 M=M+1
 
-"//push call_i\n@call_%d\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"
+"//push returnAddr_i\n@returnAddr_%d\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"
 
 // push LCL
 @LCL
@@ -46,7 +46,7 @@ M=M+1
 "//push THIS\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"
 
 // push THAT
-@THIS
+@THAT
 D=M
 @SP
 A=M
@@ -62,11 +62,11 @@ D=M
 @5
 D=D-A
 @nArgs
-D=D-nArgs
+D=D-A
 @ARG
 M=D
 
-"// ARG=SP-5-nArgs\n@SP\nD=M\@5\nD=D-A\n@%d\nD=D-nArgs\n@ARG\nM=D\n"
+"// ARG=SP-5-nArgs\n@SP\nD=M\n@5\nD=D-A\n@%d\nD=D-A\n@ARG\nM=D\n"
 
 // LCL = SP
 @SP
@@ -82,9 +82,9 @@ M=D
 
 "// goto functionName\n@%s\n0;JMP\n"
 
-(call_i)
+(returnAddr_i)
 
-"(call_%d)"
+"(returnAddr_%d)\n"
 // -------------------------------
 
 

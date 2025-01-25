@@ -416,7 +416,54 @@ char* ParseBranchingCommand(const char* command)
     return p;
 }
 
-char* ParseCommand(const char* command, const char* filename, const int lineNum, int* eqNum, int* gtNum, int* ltNum)
+char* ParseFunctionCommand(const char* command, const char* filename, int* returnAddrIndex, char** currentFunction)
+{
+    const char* op = ParseOp(command);
+    if (op == NULL) return NULL;
+
+    const char* filenameWithoutExtension = FilenameWithoutExtension(filename);
+
+    char* p = NULL;
+    if (StrCmp(op, "call"))
+    {
+        const char* functionName = ParseNWord(command, 2);
+        if (functionName == NULL) return NULL;
+        const char* nArgs = ParseNWord(command, 3);
+        if (nArgs == NULL) return NULL;
+
+        int nArgsInt;
+        if (!ParseInt(nArgs, &nArgsInt)) return NULL;
+
+        // filename, currentFunction, call index (times two nArg in between)
+        const char* tmp = "//push Xxx.functionName$ret.i\n@%s.%s$ret.%d\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n//push LCL\n@LCL\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n//push ARG\n@ARG\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n//push THIS\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n//push THAT\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n// ARG=SP-5-nArgs\n@SP\nD=M\n@5\nD=D-A\n@%d\nD=D-A\n@ARG\nM=D\n// LCL=SP\n@SP\nD=M\n@LCL\nM=D\n// goto functionName\n@%s.%s\n0;JMP\n(%s.%s$ret.%d)\n";
+        p = malloc((StrLen(tmp) - 14 + StrLen(filenameWithoutExtension) * 3 + StrLen(*currentFunction) * 2 + IntLength(*returnAddrIndex) * 2 + IntLength(nArgsInt) + StrLen(functionName)) * sizeof(char));
+
+        sprintf(p, tmp, filenameWithoutExtension, *currentFunction, *returnAddrIndex, nArgsInt, filenameWithoutExtension, functionName, filenameWithoutExtension, *currentFunction, *returnAddrIndex);
+        (*returnAddrIndex)++;
+        free((void*) functionName);
+        free((void*) nArgs);
+    }
+    else if (StrCmp(op, "function"))
+    {
+        const char* functionName = ParseNWord(command, 2);
+        if (functionName == NULL) return NULL;
+
+        if (*currentFunction == NULL || !StrCmp(functionName, *currentFunction))
+        {
+            if (*currentFunction != NULL) free(*currentFunction);
+            *currentFunction = malloc((StrLen(functionName) + 1) * sizeof(char));
+            strcpy(*currentFunction, functionName);
+            *returnAddrIndex = 0;
+        }
+        p = malloc(10);
+        sprintf(p, "funkcija");
+    }
+
+    free((void*) op);
+    return p;
+}
+
+char* ParseCommand(const char* command, const char* filename, int lineNum, int* eqNum, int* gtNum, int* ltNum, int* returnAddrIndex, char** currentFuction)
 {
     char* parsedArithmeticCommand = ParseArithmeticCommand(command, eqNum, gtNum, ltNum);
     if (parsedArithmeticCommand != NULL)
@@ -428,6 +475,12 @@ char* ParseCommand(const char* command, const char* filename, const int lineNum,
     if (parsedBranchingCommand != NULL)
     {
         return parsedBranchingCommand;
+    }
+
+    char* parsedFunctionCommand = ParseFunctionCommand(command, filename, returnAddrIndex, currentFuction);
+    if (parsedFunctionCommand != NULL)
+    {
+        return parsedFunctionCommand;
     }
 
     const char* op = ParseOp(command);
