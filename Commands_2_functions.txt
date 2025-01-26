@@ -208,3 +208,8 @@ A=M
 
 "// goto retAddr\n@R13\nA=M\n0;JMP\n"
 // -------------------------------
+
+// Bootstrap code
+
+SP=256
+call Sys.init
