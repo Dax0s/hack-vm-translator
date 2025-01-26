@@ -465,6 +465,9 @@ char* ParseFunctionCommand(const char* command, const char* filename, int* retur
         const char* tmp = "(%s)\n@%d\nD=A\n@R13\nM=D\n(%s$initLoop)\n@R13\nD=M\n@%s$initEnd\nD;JEQ\nD=D-1\n@R13\nM=D\n@SP\nA=M\nM=0\n@SP\nM=M+1\n@%s$initLoop\n0;JMP\n(%s$initEnd)\n";
         p = malloc((StrLen(tmp) - 22 + StrLen(filename) * 5 + StrLen(functionName) * 5 + IntLength(nVarsInt)) * sizeof(char));
         sprintf(p, tmp, functionName, nVarsInt, functionName, functionName, functionName, functionName);
+
+        free((void*) functionName);
+        free((void*) nVars);
     }
     else if (StrCmp(op, "return"))
     {
